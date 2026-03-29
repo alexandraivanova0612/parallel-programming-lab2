@@ -1,28 +1,28 @@
 ﻿#include <iostream>
 #include <fstream>
-#include <omp.h>        // ← ДОБАВИЛИ для OpenMP
+#include <omp.h>       
 
 using namespace std;
 
 int main(int argc, char* argv[]) {
-    if (argc != 3) {    // ← ИЗМЕНИЛИ: теперь нужно 2 аргумента (размер и потоки)
+    if (argc != 3) {    
         cout << "Usage: " << argv[0] << " <n> <num_threads>" << endl;
         return -1;
     }
 
     const int N = atoi(argv[1]);
-    const int NUM_THREADS = atoi(argv[2]);  // ← ДОБАВИЛИ количество потоков
+    const int NUM_THREADS = atoi(argv[2]);  
 
     cout << "Matrix size: " << N << "x" << N << endl;
-    cout << "Number of threads: " << NUM_THREADS << endl;  // ← ДОБАВИЛИ
+    cout << "Number of threads: " << NUM_THREADS << endl;  
 
-    omp_set_num_threads(NUM_THREADS);  // ← ДОБАВИЛИ установку потоков
+    omp_set_num_threads(NUM_THREADS);  
 
     double* A = new double[N * N];
     double* B = new double[N * N];
     double* C = new double[N * N];
 
-    // ← ДОБАВИЛИ параллельное заполнение матриц
+
 #pragma omp parallel for
     for (int i = 0; i < N; i++) {
         for (int j = 0; j < N; j++) {
@@ -31,10 +31,8 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    // ← ИЗМЕНИЛИ: clock() на omp_get_wtime()
     double start = omp_get_wtime();
 
-    // ← ДОБАВИЛИ параллельное умножение матриц
 #pragma omp parallel for
     for (int i = 0; i < N; i++) {
         for (int j = 0; j < N; j++) {
@@ -45,14 +43,13 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    // ← ИЗМЕНИЛИ: clock() на omp_get_wtime()
     double elapsed = omp_get_wtime() - start;
     double operations = 2.0 * N * N * N;
 
     cout << "\nTime: " << elapsed << " seconds" << endl;
     cout << "Size: " << N << "x" << N << endl;
     cout << "Operations: ~" << operations << endl;
-    cout << "Performance: " << operations / elapsed / 1e9 << " GFLOPS" << endl;  // ← ДОБАВИЛИ
+    cout << "Performance: " << operations / elapsed / 1e9 << " GFLOPS" << endl; 
 
 
     ofstream out("matrix_C.txt");
